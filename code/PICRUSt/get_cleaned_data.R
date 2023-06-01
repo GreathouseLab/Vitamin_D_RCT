@@ -13,14 +13,14 @@
 #   the data file for use in analyses.
 
 # need to make sure the microbiome code is read in
-source("microbiome_statistics_and_functions.R")
+source("code/PICRUSt/microbiome_statistics_and_functions.R")
 
 # ================================= #
 # read in NCI-UMD Data
 # ================================= #
 # meta-data
 meta.data <- read_excel(
-  "UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx", 
+  "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx", 
   sheet = "FOR STATA"
 )
 # subset to unique "sample ids
@@ -31,8 +31,8 @@ meta.data$sampleid <- meta.data$`Sample ID`
 meta.data$ID <- stringr::str_replace_all(meta.data$sampleid, "_", ".")
 
 # get microbiome data
-biom.file  <- import_biom("otu_table_even500.biom")
-tree.file  <- read_tree("reps_even500.tre")
+biom.file  <- import_biom("analysis/PICRUSt/otu_table_even500.biom")
+tree.file  <- read_tree("analysis/PICRUSt/reps_even500.tre")
 
 # create phyloseq object
 meta <- sample_data(meta.data)
@@ -163,9 +163,9 @@ phylo.data.nci.umd <- phylo_data
 # Read in TCGA Data
 # ================================== #
 # need to merge 3 files of meta-data
-meta.data1 <- read_xlsx("tcga_clincal_metadata.xlsx")
-meta.data2 <- read_xlsx("tcga_sample_summary.xlsx")
-meta.data3 <- read_xlsx("tcga_samples_and_metadata.xlsx")
+meta.data1 <- read_xlsx("analysis/PICRUSt/tcga_clincal_metadata.xlsx")
+meta.data2 <- read_xlsx("analysis/PICRUSt/tcga_sample_summary.xlsx")
+meta.data3 <- read_xlsx("analysis/PICRUSt/tcga_samples_and_metadata.xlsx")
 
 meta.data <- full_join(meta.data1, meta.data2, by="Patient_ID")
 meta.data <- full_join(meta.data, meta.data3, by="Patient_ID")
@@ -177,7 +177,7 @@ meta.data.RNAseq <- filter(meta.data, ID %like% "RNAseq")
 meta.data.WGS <- filter(meta.data, ID %like% "WGS")
 
 # otu tables for RNAseq and WGS
-otus <-as.data.frame(read_xlsx("tcga_otu_counts_species.xlsx"))
+otus <-as.data.frame(read_xlsx("analysis/PICRUSt/tcga_otu_counts_species.xlsx"))
 rownames(otus) <- otus[,1]
 otus <- otus[,-1]
 
