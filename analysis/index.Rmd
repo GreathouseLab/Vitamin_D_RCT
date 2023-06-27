@@ -12,5 +12,5 @@ Study of the effects of vitamin D supplements on gut microbiome changes.
 
 ## Analyses
 
-* [PICRUSt Results](PICRUSt_VDMT.html)
+*[PICRUSt Results](PICRUSt_VDMT.html)
 
