@@ -697,7 +697,7 @@ kable(results.out, format="html", digits=3) %>%
 full.res <- left_join(tb.ra, results.out, by = "description")
 
 #write.csv(full.res, "output/PICRUSt/picrust_ko_data_results.csv", row.names = F)
-write.csv(full.res, "picrust_ko_data_results.csv", row.names = F)
+#write.csv(full.res, "picrust_ko_data_results.csv", row.names = F)
 
 ```
 
@@ -1014,163 +1014,10 @@ kable(results.out, format="html", digits=3) %>%
 full.res <- left_join(tb.ra, results.out, by = "description")
 
 #write.csv(full.res, "output/PICRUSt/picrust_path_data_results.csv", row.names = F)
-write.csv(full.res, "picrust_path_data_results.csv", row.names = F)
+#write.csv(full.res, "picrust_path_data_results.csv", row.names = F)
 
 ```
 
 
 
 
-# Misc. - disregarded for the VDMT analysis
-
-```  
-#{r stuff, eval=F}
-
-library(brms)
-
-# set up output object
-results.out <- as.data.frame(matrix(ncol=7, nrow=length(DESCRIPTIONS)*3))
-colnames(results.out) <- c("Description", "Parameter", "Est", "SE", "Q2.5", "Q97.5", "Rhat")
-results.out$Description <- rep(DESCRIPTIONS, 3)
-
-# for(i in 1:length(DESCRIPTIONS)){
-for(i in 1:5){ 
-  dat0 <- mydata1 %>%
-    filter(description == DESCRIPTIONS[i])
-  fit0 <- brms::brm(
-    Abundance ~ 1 + Cohort,
-    data= dat0,
-    family=hurdle_lognormal(link="identity"),
-    control = list(adapt_delta=0.99),
-    silent = T)
-  # the resulting "hu" parameter is the model for the proportion of zeros estimated
-  #summary(fit0)
-  #plot(fit0)
-  # save the posterior summaries (intercept, tumor, and hu)
-  fit.post <- round(posterior_summary(fit0),3)
-  
-  results.out[results.out$Description == DESCRIPTIONS[i], 2] <- c("b_Intercept", "b_treatment", "hu")
-  results.out[results.out$Description == DESCRIPTIONS[i], 3:6] <- fit.post[c("b_Intercept", "b_treatment", "hu"),]
-  results.out[results.out$Description == DESCRIPTIONS[i], 7] <- rhat(fit0)[c("b_Intercept", "b_treatment", "hu")]
-  cat(".")
-}
-
-kable(results.out, format="html", digits=3) %>%
-  kable_styling(full_width = T)%>%
-  scroll_box(width="100%", height="600px")
-
-```
-
-Draft of a plots for these results
-
-```
-#{r glmm-plot1, eval=F}
-
-res.out2 <- left_join(results.out, tb.ra,by=c("Description"="description")) %>% pivot_longer(
-  cols = c("Tumor Mean", "Non-Tumor Mean"),
-  names_to = "Tumor", values_to = "RelAbundance"
-)
-
-# based on above
-dat0 <- res.out2 %>%
-  mutate(estseR=abs(Est/SE))%>%
-  na.omit()%>%
-  filter(Parameter=="b_tumor", estseR >=0.25)
-
-p <- ggplot(dat0, aes(y=Description, x=Est))+
-  geom_point()+
-  geom_segment(aes(y=Description, yend=Description, x=Q2.5, xend=Q97.5))
-p
-
-p2 <- ggplot(dat0, aes(x=RelAbundance, y=Description, color=Tumor))+
-  geom_point(position = "dodge")
-p2
-```
-
-
-Alternatively, we can model the relative abundance data.
-For this, transform the RA data to be 0-100 instead of 0-1.
-
-```
-#{r glmm-ra, message=F, eval=F}
-
-
-# set up output object
-results.out <- as.data.frame(matrix(ncol=7, nrow=length(DESCRIPTIONS)*3))
-colnames(results.out) <- c("Description", "Parameter", "Est", "SE", "Q2.5", "Q97.5", "Rhat")
-results.out$Description <- rep(DESCRIPTIONS, 3)
-
-# for(i in 1:length(DESCRIPTIONS)){
-for(i in 1:5){ 
-  dat0 <- mydata %>%
-    filter(description == DESCRIPTIONS[i])%>%
-    mutate(RelAbundance= RelAbundance*100)
-  fit0 <- brms::brm(
-    RelAbundance ~ 1 + tumor,
-    data= dat0,
-    family=hurdle_lognormal(link="identity"),
-    control = list(adapt_delta=0.99),
-    silent = T)
-  # the resulting "hu" parameter is the model for the proportion of zeros estimated
-  #summary(fit0)
-  #plot(fit0)
-  # save the posterior summaries (intercept, tumor, and hu)
-  fit.post <- round(posterior_summary(fit0),3)
-  
-  results.out[results.out$Description == DESCRIPTIONS[i], 2] <- c("b_Intercept", "b_tumor", "hu")
-  results.out[results.out$Description == DESCRIPTIONS[i], 3:6] <- fit.post[c("b_Intercept", "b_tumor", "hu"),]
-  results.out[results.out$Description == DESCRIPTIONS[i], 7] <- rhat(fit0)[c("b_Intercept", "b_tumor", "hu")]
-  cat(".")
-}
-
-kable(results.out, format="html", digits=3) %>%
-  kable_styling(full_width = T)%>%
-  scroll_box(width="100%", height="600px")
-
-```
-
-Draft of a plots for these results
-
-```
-#{r glmm-plot-ra, eval=F}
-
-# based on above
-p <- results.out %>%
-  na.omit()%>%
-  filter(Parameter=="b_tumor")%>%
-  ggplot(aes(y=Description, x=Est))+
-  geom_point()+
-  geom_segment(aes(y=Description, yend=Description, x=Q2.5, xend=Q97.5))
-p
-```
-
-For these analyses, we need to use some kind of hurdle/zero-inflated model to account for the large proportion of zeros in SOME of the the descriptions.
-This creates a programming difficulty because only SOME really need this feature.
-In the above, I tested two types of approaches.
-First, we could model each descriptions separately (the quicker - time wise way).
-Secondly, we could jointly model the descriptions using a multilevel model (2-level) hurdle model.
-The latter is EXTREMELY computationally intensive.
-
-```
-#{r glmm-full, eval=F}
-
-# random effects model (may be too large)
-# let's try on a small subset
-
-dat0 <- mydata %>%
-  filter(description %in% DESCRIPTIONS[sample(1:length(DESCRIPTIONS),25)])
-# priors
-priors2 <-c(set_prior("lkj(2)", class = "cor"))
-fit0 <- brms::brm(
-  Abundance ~ 1 + tumor + (1 + tumor | description),
-  prior = priors2,
-  data= dat0,
-  family=hurdle_lognormal(link="identity"), 
-  #iter = 10000, warmup=2000,
-  save_all_pars = T,
-  control = list(adapt_delta=0.99))
-# the resulting "hu" parameter is the model for the proportion of zeros estimated
-summary(fit0)
-plot(fit0)
-
-```

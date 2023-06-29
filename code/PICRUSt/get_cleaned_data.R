@@ -14,13 +14,19 @@
 
 # need to make sure the microbiome code is read in
 source("code/PICRUSt/microbiome_statistics_and_functions.R")
+#source("microbiome_statistics_and_functions.R")
+
 
 # ================================= #
 # read in NCI-UMD Data
 # ================================= #
 # meta-data
+#meta.data <- read_excel(
+#  "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx",
+#  sheet = "FOR STATA"
+#)
 meta.data <- read_excel(
-  "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx", 
+  "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx",
   sheet = "FOR STATA"
 )
 # subset to unique "sample ids
