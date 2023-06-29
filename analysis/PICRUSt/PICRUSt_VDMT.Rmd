@@ -115,8 +115,9 @@ mydata <- mydata %>%
 library("stringr")
 mydata1 <- mydata[str_detect(mydata$ID, "VDMT0"),]
 
+library(readxl)
 # added the cohort group (designates treatment vs placebo: 
-randomization <- readr::read_excel("analysis/PICRUSt/Randomization.xlsx", sheet = 1)
+randomization <- read_excel("analysis/PICRUSt/Randomization.xlsx", sheet = 1)
 #randomization <- read_excel("Randomization.xlsx", sheet = 1)
 
  # create participant ID column to match with randomization
