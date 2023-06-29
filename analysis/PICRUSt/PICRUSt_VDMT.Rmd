@@ -34,22 +34,35 @@ Use file pathways_out > path_abun_unstrat_descrip to conduct the same analyses a
 ```
 
 ```{r data, include=FALSE, echo=FALSE, warning=F, error=F, message=F}
-# load packages
-source("code/PICRUSt/load_packages.R")
-#source("load_packages.R")
+# load packages: copied from another file: "code/PICRUSt/load_packages.R"
+if (!requireNamespace("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
+}
+# check if phyloseq is installed:
+if(!requireNamespace("phyloseq", quietly=T)){
+  BiocManager::install("phyloseq")
+}
 
+# list of packages
+packages <- c("phyloseq","vegan", "lme4", "lmerTest",
+              "tidyverse", "readr", "readxl", "forcats",
+              "data.table", "ggplot2",
+              "kableExtra", "xtable", "gridExtra", "viridis",
+              "patchwork", "gvlma", "car", "dplyr", "stringr",
+              "reshape2", "ggdendro", "dendextend", "cowplot")
+new.packages <- packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, quiet = T, dependencies = T)
+# Load packages
+lapply(packages, library, character.only = TRUE)
+
+w.d <- getwd()
+```
+
+```{r data, include=FALSE, echo=FALSE, warning=F, error=F, message=F}
 # get data
 source("code/PICRUSt/get_cleaned_data.R")
-#source("get_cleaned_data.R")
 
 theme_set(theme_bw())
-# pal = "Sequential"
-# scale_colour_discrete <-  function(palname=pal, ...){
-#   scale_colour_brewer(palette=palname, ...)
-# }
-# scale_fill_discrete <-  function(palname=pal, ...){
-#   scale_fill_brewer(palette=palname, ...)
-# }
 
 knitr::opts_chunk$set(out.width = "225%", out.height = 10)
 
