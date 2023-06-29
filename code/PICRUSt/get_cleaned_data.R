@@ -25,7 +25,8 @@ source("code/PICRUSt/microbiome_statistics_and_functions.R")
 #  "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx",
 #  sheet = "FOR STATA"
 #)
-meta.data <- readr::read_excel(
+library(readxl)
+meta.data <- read_excel(
   "analysis/PICRUSt/UMD Esoph dataset from EB_2019_08_06_AV edits.xlsx",
   sheet = "FOR STATA"
 )
