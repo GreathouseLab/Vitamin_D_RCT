@@ -24,6 +24,7 @@ kcal_hist <- hist(data$Total.HEI.2015.Score,
                   ylim = c(0, 10))
 
 min(data$Total.HEI.2015.Score) # 29.89 score from participant 26
+max(data$Total.HEI.2015.Score) # 85.34
 
 ########################## OVERALL RADAR PLOT ############################
 # https://epi.grants.cancer.gov/hei/interpret-visualize-hei-scores.html
@@ -101,10 +102,11 @@ participant1 <- HEI_component_scores_PercentMinMax[1:3,2:14]
 radarchart(participant1, axistype=1, vlcex = 0.5,
            pcol = rgb(0.2,0.4,0.8,0.8),  # change per graph
            pfcol = rgb(0.2,0.4,0.8,0.5), # change per graph
-           plwd = 4 ,
+           plwd = 4,
            cglcol = "grey",
            cglty = 1,
            axislabcol = "grey",
+           #axislabcol['TotalVegetables'] = "red",
            caxislabels = seq(0,100,25),
            cglwd = 0.8,
            title = HEI_component_scores_PercentMinMax$ID[3])
@@ -366,8 +368,8 @@ radarchart(participant19, axistype=1, vlcex = 0.5,
 # participant 20
 participant20 <- HEI_component_scores_PercentMinMax[c(1:2, 22),2:14]
 radarchart(participant20, axistype=1, vlcex = 0.5,
-           pcol = rgb(0.8,1,0.8,0.8),
-           pfcol = rgb(0.8,1,0.8,0.5),
+           pcol = rgb(0.7,1,0.8,0.8),
+           pfcol = rgb(0.7,1,0.8,0.5),
            plwd = 4 ,
            cglcol = "grey",
            cglty = 1,
@@ -471,8 +473,8 @@ radarchart(participant27, axistype=1, vlcex = 0.5,
 # participant 28
 participant28 <- HEI_component_scores_PercentMinMax[c(1:2, 30),2:14]
 radarchart(participant28, axistype=1, vlcex = 0.5,
-           pcol = rgb(0.8,1,1,0.8),
-           pfcol = rgb(0.8,1,1,0.5),
+           pcol = rgb(0.7,1,1,0.8),
+           pfcol = rgb(0.7,1,1,0.5),
            plwd = 4 ,
            cglcol = "grey",
            cglty = 1,
@@ -680,10 +682,34 @@ radarchart(participant44, axistype=1, vlcex = 0.5,
            cglwd = 0.8,
            title = HEI_component_scores_PercentMinMax$ID[45])
 
+#################### INDIVIDUAL PLOTS WITH THE AVG METRIC #####################
+
+avgs <- colMeans(HEI_component_scores_PercentMinMax[3:45,2:14])
+avg_row <- c("ID", as.numeric(avgs))
+HEI_component_scores_PercentMinMax_avg <- rbind(HEI_component_scores_PercentMinMax, avg_row)
+#HEI_component_scores_PercentMinMax_avg %>% mutate_at(c('TotalVegetables', 'GreensBeans',
+#                                                       'TotalFruits', 'WholeFruits',
+#                                                       'WholeGrains', 'Dairy',
+#                                                       'TotalProteins', 'SeafoodPlantProteins',
+#                                                       'FattyAcids', 'Sodium', 'RefinedGrains',
+#                                                       'SaturatedFats', 'AddedSugars'), as.numeric)
+
+# participant 44
+participant44 <- HEI_component_scores_PercentMinMax_avg[c(1:2, 45, 46),2:14]
+radarchart(participant44, axistype=1, vlcex = 0.5,
+           pcol = c(rgb(0,0.8,1,0.8), 1),
+           pfcol = c(rgb(0,0.8,1,0.5), NA),
+           plwd = c(4,1),
+           cglcol = "grey",
+           cglty = 1,
+           axislabcol = "grey",
+           caxislabels = seq(0,100,25),
+           cglwd = 0.8,
+           title = HEI_component_scores_PercentMinMax$ID[45])
 
 ################### AVERAGE OF ALL PARTICIPANTS RADAR PLOT ###################
 
-tot_avgs <- colMeans(HEI_component_scores_PercentMinMax[,2:14])
+tot_avgs <- colMeans(HEI_component_scores_PercentMinMax[3:45,2:14])
 
 max_13_row <- c(rep(100, 13))
 min_13_row <- c(rep(0, 13))
