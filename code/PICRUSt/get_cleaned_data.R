@@ -167,9 +167,9 @@ phylo.data.nci.umd <- phylo_data
 # Read in TCGA Data
 # ================================== #
 # need to merge 3 files of meta-data
-meta.data1 <- read_xlsx("analysis/PICRUSt/tcga_clincal_metadata.xlsx")
-meta.data2 <- read_xlsx("analysis/PICRUSt/tcga_sample_summary.xlsx")
-meta.data3 <- read_xlsx("analysis/PICRUSt/tcga_samples_and_metadata.xlsx")
+meta.data1 <- read_csv("analysis/PICRUSt/tcga_clincal_metadata.xlsx")
+meta.data2 <- read_csv("analysis/PICRUSt/tcga_sample_summary.xlsx")
+meta.data3 <- read_csv("analysis/PICRUSt/tcga_samples_and_metadata.xlsx")
 
 meta.data <- full_join(meta.data1, meta.data2, by="Patient_ID")
 meta.data <- full_join(meta.data, meta.data3, by="Patient_ID")
@@ -181,7 +181,7 @@ meta.data.RNAseq <- filter(meta.data, ID %like% "RNAseq")
 meta.data.WGS <- filter(meta.data, ID %like% "WGS")
 
 # otu tables for RNAseq and WGS
-otus <-as.data.frame(read_xlsx("analysis/PICRUSt/tcga_otu_counts_species.xlsx"))
+otus <-as.data.frame(read_csv("analysis/PICRUSt/tcga_otu_counts_species.xlsx"))
 rownames(otus) <- otus[,1]
 otus <- otus[,-1]
 
